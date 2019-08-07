@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <title>Document</title>
+
+  <style>
+    @font-face {
+      font-family: 'Billabong';
+      src: url('billabong.ttf');
+    }
+
+    ul#images {
+      list-style:none;
+      margin:0;
+      padding:0;
+    }
+
+    ul#images img {
+      width: 614px;
+      border: 1px solid #e6e6e6;
+      margin-bottom:60px;
+    }
+
+    .title {
+      font-family: "Billabong";
+      font-size:60px;
+    }
+
+    .grey-box {
+      border: 1px solid #e6e6e6;
+      width:100%;
+      padding-left:16px;
+      padding-top:12px;
+    }
+
+
+
+  </style>
+
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12"><span class='title'>LaterGram</span></div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-12">
+
+        <div id="desc">
+          <textarea placeholder='Enter description here...' name="description" id="description" cols="100" rows="2"></textarea>
+        </div>
+
+        <div id="filesubmit">
+          <label for="">Upload photo</label>
+          <input type="file" class="file-select" accept="image/*"/>
+          <button class="btn btn-info file-submit">SUBMIT</button>
+        </div>
+      </div> <!-- end of row -->
+    </div>
+
+    <div style='height:50px;'>
+
+    </div>
+
+    <div class="row">
+      <div class="col-7">
+        <div id='app'>
+          <ul id='images'>
+            <li v-for="image in images">
+              <img v-bind:src="image" />
+            </li>
+          </ul>
+        </div>
+      </div> <!-- end of col-8 -->
+
+      <div class='col-4'>
+        <div style='height:250px;' class='grey-box'>
+          <div style='color:#999;font-size:14px;'>Stories</div>
+        </div>
+
+        <div style='height:400px;margin-top:20px;' class='grey-box'>
+            <div style='color:#999;font-size:14px;'>Suggestion for you</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+
+
+</body>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<!-- development version, includes helpful console warnings -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.2.3/firebase-storage.js"></script>
+
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#config-web-app -->
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyACBE1dRf5atbKcdJXDeBhUvv7o2Ss0s8c",
+    authDomain: "instademo-db1d0.firebaseapp.com",
+    databaseURL: "https://instademo-db1d0.firebaseio.com",
+    projectId: "instademo-db1d0",
+    storageBucket: "instademo-db1d0.appspot.com",
+    messagingSenderId: "1019223418110",
+    appId: "1:1019223418110:web:7bc1c4ea22ac2242"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+</script>
+
+<script>
+  const storageService = firebase.storage();
+  const storageRef = storageService.ref();
+
+  document.querySelector('.file-select').addEventListener('change', handleFileUploadChange);
+  document.querySelector('.file-submit').addEventListener('click', handleFileUploadSubmit);
+
+  let selectedFile;
+  function handleFileUploadChange(e) {
+      selectedFile = e.target.files[0];
+  }
+
+  function handleFileUploadSubmit(e) {
+    var description = document.querySelector('#description').value
+    var metadata = {
+      customMetadata: {
+        'description': description
+      }
+    }
+    return true;
+    const uploadTask = storageRef.child(`images/${selectedFile.name}`).put(selectedFile, metadata); //create a child directory called images, and place the file inside this directory
+    uploadTask.on('state_changed', (snapshot) => {
+    // Observe state change events such as progress, pause, and resume
+    }, (error) => {
+      // Handle unsuccessful uploads
+      console.log(error);
+    }, () => {
+      // Do something once upload is complete
+      console.info('image uploaded successfully');
+    });
+  }
+</script>
+
+<script>
+  var app = new Vue({
+  el: '#app',
+  data: {
+      message: 'Hello Vue!',
+      images:[],
+      currentImages:[]
+    }
+  })
+</script>
+
+<script>
+  // Create a reference under which you want to list
+  var listRef = storageRef.child('images/');
+
+  // Find all the prefixes and items.
+  listRef.listAll().then(function(res) {
+    console.log('res:', res);
+    res.items.forEach(function(itemRef) {
+      console.log(itemRef.location);
+      itemRef.getDownloadURL().then(function(url){
+        app.$data.images.push(url);
+      });
+    });
+  }).catch(function(error) {
+    // Uh-oh, an error occurred!
+  });
+</script>
+
+</html>
